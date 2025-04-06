@@ -1,0 +1,121 @@
+<div class="sort-lab-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo-container">
+      <img src="https://cryptologos.cc/logos/algorand-algo-logo.png" alt="Logo" class="logo" />
+      <h1>Sort Lab</h1>
+    </div>
+    <div class="mode-selector">
+      <button mat-raised-button [color]="mode === 'single' ? 'primary' : ''" (click)="setMode('single')">1 Algo</button>
+      <button mat-raised-button [color]="mode === 'dual' ? 'primary' : ''" (click)="setMode('dual')">2 Algo</button>
+      <button mat-raised-button [color]="mode === 'all' ? 'primary' : ''" (click)="setMode('all')">6 Algo</button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Input Section -->
+    <section class="input-section">
+      <h2>Input Data</h2>
+      <div class="input-list">
+        <div *ngFor="let num of numbers; let i = index" class="input-item">
+          <input type="number" [(ngModel)]="numbers[i]" />
+          <button mat-icon-button (click)="removeNumber(i)">X</button>
+        </div>
+      </div>
+      <div class="add-input">
+        <input type="number" placeholder="Add a number..." [(ngModel)]="newNumber" />
+        <button mat-raised-button color="primary" (click)="addNumber()">+ Add Value</button>
+      </div>      <div class="input-actions">
+        <button mat-raised-button (click)="randomize()">Random</button>
+        <button mat-raised-button (click)="clear()">Clear</button>
+        <button mat-raised-button color="primary" (click)="submit()">Submit</button>
+      </div>
+    </section>
+
+    <!-- Visualization Section -->
+    <section class="visualization-section">
+      <h2>Visualization ({{ mode === 'single' ? '1 algo' : mode === 'dual' ? 'compare 2 algo' : 'compare 6 algo' }})</h2>
+      <div class="charts-container" [ngClass]="mode">
+        <div *ngFor="let state of algorithmStates" class="chart-wrapper">
+          <h3>{{ algorithmNames[state.name] }} ({{ getExecutionTime(state) }})</h3>
+          <div class="bar-chart">
+            <div *ngFor="let num of state.numbers; let i = index" class="bar-wrapper">
+              <div
+                class="bar"
+                [style.height.px]="getBarHeight(num, state.numbers)"
+                [style.width.px]="getBarWidth(state.numbers)"
+                [style.backgroundColor]="getBarColor(i, state)"
+              ></div>
+              <div class="bar-label">{{ num }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Algorithm Selection -->
+  <section class="algorithm-selection">
+    <h2>Select Algorithms</h2>
+    <div class="algorithm-selectors">
+      <mat-form-field appearance="fill" *ngIf="mode === 'single' || mode === 'dual'" class="custom-select">
+        <mat-label>Algorithm 1</mat-label>
+        <mat-select [(value)]="selectedAlgorithm" (selectionChange)="reset()">
+          <mat-option *ngFor="let algo of algorithms" [value]="algo">{{ algorithmNames[algo] }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill" *ngIf="mode === 'dual'" class="custom-select">
+        <mat-label>Algorithm 2</mat-label>
+        <mat-select [(value)]="selectedAlgorithm2" (selectionChange)="reset()">
+          <mat-option *ngFor="let algo of getAvailableAlgorithmsForSecondDropdown()" [value]="algo">{{ algorithmNames[algo] }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </section>
+
+  <!-- Control Section -->
+  <section class="control-section">
+    <h2>Controls</h2>
+    <div class="controls">
+      <button mat-raised-button color="primary" (click)="play()">{{ playButtonText }}</button>
+      <button mat-raised-button (click)="pause()">{{ pauseButtonText }}</button>
+      <button mat-raised-button (click)="nextStep()">Next Step</button>
+      <div class="speed-control">
+        <span>Speed:</span>
+        <mat-slider
+          class="speed-slider"
+          [min]="1"
+          [max]="10"
+          [step]="1"
+          discrete
+          [displayWith]="formatSpeedLabel"
+          [(ngModel)]="speed"
+          (input)="setSpeed($event)"
+        >
+          <input matSliderThumb />
+        </mat-slider>
+      </div>
+    </div>
+  </section>
+
+  <!-- Description Section -->
+  <section class="description-section">
+    <h2>Instructions</h2>
+    <div class="algorithm-overview">
+      <h3>Algorithm Overview</h3>
+      <p>{{ algorithmDescription }}</p>
+      <h3>Input Data</h3>
+      <p>{{ numbers.join(', ') }}</p>
+    </div>
+    <div class="current-actions">
+      <h3>Current Actions</h3>
+      <p>{{ currentAction }}</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Powered by Angular & xAI</p>
+  </footer>
+</div>
