@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSliderModule, MatSliderChange } from '@angular/material/slider';
+import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 
@@ -17,8 +17,7 @@ interface AlgorithmState {
   swapIndices?: [number, number];
   steps?: any[];
   shellGap?: number;
-  shellI?: number; // Thêm shellI vào interface
-  shellJ?: number; // Thêm shellJ vào interface
+  shellI?: number;
   radixDigit?: number;
 }
 
@@ -35,11 +34,11 @@ interface AlgorithmState {
     MatIconModule,
     MatSliderModule,
     NgForOf,
-    NgIf,
     NgClass,
+    NgIf,
   ],
 })
-export class SortLabComponent implements OnInit {
+export class SortLabComponent implements OnInit, OnDestroy {
   mode: 'single' | 'dual' | 'all' = 'single';
   selectedAlgorithm: string = 'insertion';
   selectedAlgorithm2: string = 'bubble';
@@ -52,6 +51,7 @@ export class SortLabComponent implements OnInit {
   currentStep: number = 0;
   playButtonText: string = 'Play';
   pauseButtonText: string = 'Pause';
+  private timeoutId: any = null; // Biến để lưu ID của setTimeout
 
   algorithmStates: AlgorithmState[] = [];
   algorithms: string[] = ['insertion', 'bubble', 'quick', 'shell', 'radix', 'selection'];
@@ -78,6 +78,11 @@ export class SortLabComponent implements OnInit {
     this.mode = savedMode || 'single';
     this.updateDescription();
     this.reset();
+  }
+
+  ngOnDestroy() {
+    // Hủy setTimeout khi component bị hủy
+    this.clearTimeout();
   }
 
   setMode(mode: 'single' | 'dual' | 'all') {
@@ -151,6 +156,7 @@ export class SortLabComponent implements OnInit {
     this.currentAction = '';
     this.playButtonText = 'Play';
     this.pauseButtonText = 'Pause';
+    this.clearTimeout(); // Hủy setTimeout khi reset
     this.algorithmStates = [];
 
     if (this.mode === 'single') {
@@ -177,8 +183,7 @@ export class SortLabComponent implements OnInit {
         state.steps = this.generateQuickSortSteps([...state.numbers], 0, state.numbers.length - 1);
       } else if (state.name === 'shell') {
         state.shellGap = Math.floor(state.numbers.length / 2);
-        state.shellI = state.shellGap; // Khởi tạo shellI
-        state.shellJ = state.shellI; // Khởi tạo shellJ
+        state.shellI = state.shellGap;
       } else if (state.name === 'radix') {
         state.radixDigit = 1;
       }
@@ -203,6 +208,7 @@ export class SortLabComponent implements OnInit {
     this.playButtonText = 'Play';
     this.pauseButtonText = 'Paused';
     this.currentAction = 'Sorting paused!';
+    this.clearTimeout(); // Hủy setTimeout khi tạm dừng
   }
 
   nextStep() {
@@ -213,10 +219,16 @@ export class SortLabComponent implements OnInit {
     });
   }
 
-  setSpeed(event: Event) {
-    const sliderEvent = event as unknown as MatSliderChange;
-    this.speed = sliderEvent.value ?? 1;
+onSpeedChange(event: Event) {
+  const inputElement = event.target as HTMLInputElement;
+  const value = Number(inputElement.value);
+  console.log('Speed changed to:', value);
+  this.speed = value;
+  if (this.isPlaying) {
+    this.clearTimeout();
+    this.runAlgorithms();
   }
+}
 
   updateDescription() {
     this.algorithmDescription = this.algorithmDescriptions[this.selectedAlgorithm] || 'Select an algorithm to see its description.';
@@ -233,7 +245,7 @@ export class SortLabComponent implements OnInit {
   runAlgorithms() {
     if (!this.isPlaying) return;
 
-    setTimeout(() => {
+    this.timeoutId = setTimeout(() => {
       let allFinished = true;
       this.algorithmStates.forEach(state => {
         if (!state.isFinished) {
@@ -254,7 +266,15 @@ export class SortLabComponent implements OnInit {
         this.pauseButtonText = 'Pause';
         this.currentAction = 'Sorting complete! Compare the results.';
       }
-    }, 1000 / this.speed);
+    }, 2000 / this.speed);
+  }
+
+  // Hàm để hủy setTimeout
+  private clearTimeout() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
   }
 
   runAlgorithmStep(state: AlgorithmState) {

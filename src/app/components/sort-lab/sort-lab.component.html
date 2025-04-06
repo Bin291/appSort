@@ -1,10 +1,7 @@
 <div class="sort-lab-container">
   <!-- Header -->
   <header class="header">
-    <div class="logo-container">
-      <img src="https://cryptologos.cc/logos/algorand-algo-logo.png" alt="Logo" class="logo" />
-      <h1>Sort Lab</h1>
-    </div>
+    <h1>Sort Lab</h1>
     <div class="mode-selector">
       <button mat-raised-button [color]="mode === 'single' ? 'primary' : ''" (click)="setMode('single')">1 Algo</button>
       <button mat-raised-button [color]="mode === 'dual' ? 'primary' : ''" (click)="setMode('dual')">2 Algo</button>
@@ -22,11 +19,13 @@
           <input type="number" [(ngModel)]="numbers[i]" />
           <button mat-icon-button (click)="removeNumber(i)">X</button>
         </div>
+
       </div>
       <div class="add-input">
         <input type="number" placeholder="Add a number..." [(ngModel)]="newNumber" />
         <button mat-raised-button color="primary" (click)="addNumber()">+ Add Value</button>
-      </div>      <div class="input-actions">
+      </div>
+      <div class="input-actions">
         <button mat-raised-button (click)="randomize()">Random</button>
         <button mat-raised-button (click)="clear()">Clear</button>
         <button mat-raised-button color="primary" (click)="submit()">Submit</button>
@@ -37,7 +36,7 @@
     <section class="visualization-section">
       <h2>Visualization ({{ mode === 'single' ? '1 algo' : mode === 'dual' ? 'compare 2 algo' : 'compare 6 algo' }})</h2>
       <div class="charts-container" [ngClass]="mode">
-        <div *ngFor="let state of algorithmStates" class="chart-wrapper">
+        <div *ngFor="let state of algorithmStates" class="chart-wrapper" [attr.data-algo]="state.name">
           <h3>{{ algorithmNames[state.name] }} ({{ getExecutionTime(state) }})</h3>
           <div class="bar-chart">
             <div *ngFor="let num of state.numbers; let i = index" class="bar-wrapper">
@@ -88,10 +87,10 @@
           [min]="1"
           [max]="10"
           [step]="1"
-          discrete
+          thumbLabel
           [displayWith]="formatSpeedLabel"
           [(ngModel)]="speed"
-          (input)="setSpeed($event)"
+          (input)="onSpeedChange($event)"
         >
           <input matSliderThumb />
         </mat-slider>
