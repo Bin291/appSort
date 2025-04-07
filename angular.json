@@ -29,8 +29,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
-            ],
+              },
+              "src/assets",
+              "src/favicon.ico"
+            ]
+          ,
             "styles": [
               "@angular/material/prebuilt-themes/rose-red.css",
               "src/styles.scss"
@@ -94,8 +97,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
-            ],
+              },
+              "src/assets",
+              "src/favicon.ico"
+            ]
+          ,
             "styles": [
               "@angular/material/prebuilt-themes/rose-red.css",
               "src/styles.scss"

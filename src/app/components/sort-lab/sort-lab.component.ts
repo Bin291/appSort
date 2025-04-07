@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import { FormsModule } from '@angular/forms';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
+import { Router } from '@angular/router';
 
 interface AlgorithmState {
   name: string;
@@ -53,6 +54,7 @@ export class SortLabComponent implements OnInit, OnDestroy {
   pauseButtonText: string = 'Pause';
   private timeoutId: any = null; // Biến để lưu ID của setTimeout
 
+
   algorithmStates: AlgorithmState[] = [];
   algorithms: string[] = ['insertion', 'bubble', 'quick', 'shell', 'radix', 'selection'];
   algorithmNames: { [key: string]: string } = {
@@ -72,6 +74,12 @@ export class SortLabComponent implements OnInit, OnDestroy {
     radix: '1. Sort numbers digit by digit, starting from the least significant digit\n2. Use counting sort for each digit\n3. Repeat for all digits until the most significant digit',
     selection: '1. Iterate through the array to find the minimum element\n2. Swap the minimum element with the first unsorted element\n3. Repeat for the remaining unsorted portion',
   };
+  // constructor(private router: Router) {}
+  //
+  // goBack() {
+  //   this.router.navigate(['/home']).catch(err => console.error('Navigation error:', err));
+  // }
+
 
   ngOnInit() {
     const savedMode = localStorage.getItem('sortLabMode') as 'single' | 'dual' | 'all';

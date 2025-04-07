@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 // Import BrowserAnimationsModule (required for Angular Material animations)
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {SortLabComponent} from '../components/sort-lab/sort-lab.component';
+import {GetStartComponent} from '../components/get-start/get-start.component';
 import {AppComponent} from '../app.component';
 
 @NgModule({
@@ -31,6 +32,7 @@ import {AppComponent} from '../app.component';
     MatIconModule,
     AppComponent,
     SortLabComponent,
+    GetStartComponent
     // For mat-icon-button
   ],
   providers: [],
